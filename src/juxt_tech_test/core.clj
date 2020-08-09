@@ -81,6 +81,14 @@
       (get-forecast lat lng)
       (str "No results found for the city " city))))
 
+(defn icon-frequency
+  [{:strs [data]}]
+  (->> (map #(get % "icon") data)
+       frequencies
+       (map #(str (val %) " " (key %) " days ")) ;could split string here to remove -day prefix on clear-day and parly-cloudy-day
+       (apply str)
+       (str "This week we should have ")
+       trim))
 
 (defn -main
   [& args]
@@ -93,4 +101,5 @@
   (let [{:strs [daily]} (get-darksky-forecast 60.59329987 -1.44250533)]
     (println "PART 3")
     (println (hottest-day daily))
+    (println (icon-frequency daily))
     (println "END PART 3")))
