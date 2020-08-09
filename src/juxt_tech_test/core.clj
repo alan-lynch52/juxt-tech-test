@@ -35,9 +35,24 @@
          "% chance of rain")))
 
 
+(defn get-forecast-with-city
+  [city]
+  (let [same-city? #(= (lower-case city) (lower-case (get % "name")))
+        {:strs [lat lng]
+         :as res} (-> (client/get cities-url)
+                      :body
+                      parse-string
+                      (->> (filter same-city?))
+                      first)]
+    (if (seq res)
+      (get-forecast lat lng)
+      (str "No results found for the city " city))))
 
 
 (defn -main
   [& args]
   (println "PART 1")
-  (println (get-forecast 60.59329987 -1.44250533)))
+  (println (get-forecast 60.59329987 -1.44250533))
+  (println "END PART 1")
+  (println "PART 2")
+  (println (get-forecast-with-city "pas de la casa")))
