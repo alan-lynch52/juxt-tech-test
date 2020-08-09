@@ -15,6 +15,39 @@
 
 (def cities-url "https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json")
 
+
+(defn day-abbreviation->full-day
+  [day]
+  (get
+   {"mon" "Monday"
+    "tue" "Tuesday"
+    "wed" "Wednesday"
+    "thu" "Thursday"
+    "fri" "Friday"
+    "sat" "Saturday"
+    "sun" "Sunday"}
+   (lower-case day)))
+
+(defn find-hottest-day
+  [data]
+  (-> (sort-by #(get % "temperatureMax") data)
+      last ;last item will be the item with the largest temperatureMax
+      ))
+
+(defn hottest-day
+  [{:strs [data]}]
+  (-> (find-hottest-day data)
+      (get "time")
+      long
+      (* 1000)
+      c/from-long
+      c/to-date ;convert to java time, as this contains the day string
+      str
+      (split #" ")
+      first
+      day-abbreviation->full-day
+      (->> (str "This week the hottest day will be "))))
+
 (defn get-darksky-forecast
   [latitude longitude & [time]]
   (let [url (cond-> (str base-url "/" api-key "/" latitude "," longitude)
@@ -55,4 +88,9 @@
   (println (get-forecast 60.59329987 -1.44250533))
   (println "END PART 1")
   (println "PART 2")
-  (println (get-forecast-with-city "pas de la casa")))
+  (println (get-forecast-with-city "pas de la casa"))
+  (println "END PART 2")
+  (let [{:strs [daily]} (get-darksky-forecast 60.59329987 -1.44250533)]
+    (println "PART 3")
+    (println (hottest-day daily))
+    (println "END PART 3")))
