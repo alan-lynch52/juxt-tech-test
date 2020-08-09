@@ -18,11 +18,14 @@ Follow build step in Usage section
 
 ## Usage
 BUILD:
-    $ lein uberjar
+$ lein uberjar
+
 RUN: 
-    $ java -jar ./target/uberjar/juxt-tech-test-0.1.0-SNAPSHOT-standalone.jar
+$ java -jar ./target/uberjar/juxt-tech-test-0.1.0-SNAPSHOT-standalone.jar
+
 REPL:
     $ lein repl
+
 TEST:
     $ lein with-profiles dev test
 
