@@ -90,6 +90,48 @@
        (str "This week we should have ")
        trim))
 
+(def week-in-seconds 604800)
+
+(defn month-abbreviation->full-month
+  [month]
+  (get 
+  {"jan" "January"
+   "feb" "February"
+   "mar" "March"
+   "apr" "April"
+   "may" "May"
+   "jun" "June"
+   "jul" "July"
+   "aug" "August"
+   "sep" "September"
+   "oct" "October"
+   "nov" "November"
+   "dec" "December"}
+   (lower-case month)))
+
+(defn hottest-month-2019
+  [longitude latitude]
+  (let [start-date (-> (t/date-time 2019 1 1)
+                       c/to-long
+                       (/ 1000))
+        dates (map #(+ start-date (* week-in-seconds %1)) (range 52))]
+    (-> (map #(-> (get-darksky-forecast longitude latitude %)
+                  (get-in ["daily" "data"])
+                  find-hottest-day)
+             dates)
+        find-hottest-day
+        (get "time")
+        long
+        (* 1000) ;repetitive code here, could be refactored with more time
+        c/from-long
+        c/to-date
+        str
+        (split #" ")
+        second
+        month-abbreviation->full-month
+        (->> (str "Hottest month of 2019 was ")))))
+
+
 (defn -main
   [& args]
   (println "PART 1")
@@ -102,4 +144,5 @@
     (println "PART 3")
     (println (hottest-day daily))
     (println (icon-frequency daily))
+    (println (hottest-month-2019 60.59329987 -1.44250533))
     (println "END PART 3")))
